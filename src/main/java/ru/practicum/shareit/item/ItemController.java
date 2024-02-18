@@ -13,23 +13,21 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.dto.ItemMapper.*;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private static final String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") long ownerId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto createItem(@RequestHeader(USER_HEADER) long ownerId, @Valid @RequestBody ItemDto itemDto) {
         Item item = convertToEntity(itemDto, ownerId);
         return convertToDto(itemService.createItem(item));
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsForOwner(@RequestHeader("X-Sharer-User-Id") long ownerId) {
+    public List<ItemDto> getAllItemsForOwner(@RequestHeader(USER_HEADER) long ownerId) {
         return itemService.getAllItemsForOwner(ownerId).stream()
                 .map(ItemMapper::convertToDto)
                 .collect(Collectors.toList());
@@ -41,7 +39,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long ownerId, @PathVariable long id, @RequestBody Map<String, String> formParams) {
+    public ItemDto updateItem(@RequestHeader(USER_HEADER) long ownerId, @PathVariable long id, @RequestBody Map<String, String> formParams) {
         return convertToDto(itemService.updateItem(id, formParams, ownerId));
     }
 

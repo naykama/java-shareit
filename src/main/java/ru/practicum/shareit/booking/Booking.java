@@ -5,9 +5,6 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Data
 public class Booking {
     @NotNull
