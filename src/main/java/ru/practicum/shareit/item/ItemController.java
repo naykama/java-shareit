@@ -39,7 +39,8 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ItemDto updateItem(@RequestHeader(USER_HEADER) long ownerId, @PathVariable long id, @RequestBody Map<String, String> formParams) {
+    public ItemDto updateItem(@RequestHeader(USER_HEADER) long ownerId, @PathVariable long id,
+                              @RequestBody Map<String,String> formParams) {
         return convertToDto(itemService.updateItem(id, formParams, ownerId));
     }
 
