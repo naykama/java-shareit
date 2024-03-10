@@ -34,6 +34,13 @@ public class ErrorHandler {
         return new ErrorResponse("Ошибка валидации");
     }
 
+    @ExceptionHandler({IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse argumentException(final IllegalArgumentException e) {
+        log.error("Ошибка в аргументах запроса");
+        return new ErrorResponse("Ошибка в аргументах запроса");
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {

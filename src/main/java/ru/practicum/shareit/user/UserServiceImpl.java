@@ -14,18 +14,21 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
+    @Override
     public User createUser(User user) {
         User createdUser = userRepository.save(user);
         log.info("User with id = {} created", createdUser.getId());
         return createdUser;
     }
 
+    @Override
     public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
         log.info("List of users found, count of users = {}", users.size());
         return users;
     }
 
+    @Override
     public User getUserById(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(
                                         String.format("User with id = %d not found", id)));
@@ -33,6 +36,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
     public User updateUser(long id, Map<String, String> userUpdatedParams) {
         User user = getUserById(id);
         for (String key : userUpdatedParams.keySet()) {
@@ -54,6 +58,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
     public void deleteUser(long id) {
         log.info("User with id = {} deleted", id);
         userRepository.deleteById(id);

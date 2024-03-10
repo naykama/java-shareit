@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemRepository;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +20,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item createItem(Item item) {
-        userRepository.findById(item.getOwnerId()).orElseThrow(() -> new NotFoundException(
-                String.format("User with id = %d not found", item.getOwnerId())));
+        findUserForItem(item.getOwnerId());
         Item createdItem = itemRepository.save(item);
         log.info("Item with id = {} created", createdItem.getId());
         return createdItem;
@@ -44,8 +43,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateItem(long id, Map<String, String> updatedParams, long ownerId) {
-        userRepository.getById(ownerId);
-        Item item = itemRepository.getItemById(id);
+        findUserForItem(ownerId);
+        Item item = getItemById(id);
         if (ownerId != item.getOwnerId()) {
             log.error("User with id = {} cannot update item with id = {}. He is not owner", ownerId, id);
             throw new NotFoundException(
@@ -73,6 +72,11 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> searchItems(String text) {
         log.info("Items for search with text = {} found", text);
         return text.isEmpty() ? new ArrayList<>() : itemRepository
-                .getByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndIsAvailableToRentIsTrue(text, text);
+                .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndIsAvailableToRentIsTrue(text, text);
+    }
+
+    private User findUserForItem(long ownerId) {
+        return userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException(
+                String.format("User with id = %d not found", ownerId)));
     }
 }
