@@ -22,13 +22,13 @@ public class BookingController {
         validateDates(bookingDto.getStartDate(), bookingDto.getEndDate());
         return bookingService.createBooking(bookingDto, bookerId);
     }
-//
-//    @PatchMapping("/{bookingId}")
-//    public GetBookingDto responseBooking(@RequestHeader(USER_HEADER) long bookerId,
-//                                         @PathVariable long bookingId,
-//                                         @RequestParam(name = "approved") boolean isApproved) {
-//        return convertToGetDto(bookingService.responseBooking(bookerId, bookingId, isApproved));
-//    }
+
+    @PatchMapping("/{bookingId}")
+    public GetBookingDto responseBooking(@RequestHeader(USER_HEADER) long ownerId,
+                                         @PathVariable long bookingId,
+                                         @RequestParam(name = "approved") boolean isApproved) {
+        return bookingService.responseBooking(ownerId, bookingId, isApproved);
+    }
 //
 //    @GetMapping("/{bookingId}")
 //    public GetBookingDto findBookingById(@RequestHeader(USER_HEADER) long bookerId,

@@ -33,7 +33,7 @@ public class BookingServiceImpl implements BookingService {
                                             String.format("Item with id = %d not found", bookingDto.getItemId())));
         User booker = userRepository.findById(bookerId).orElseThrow(() -> new NotFoundException(
                                                             String.format("User with id = %d not found", bookerId)));
-        if (bookedItem.isAvailableToRent() && checkDates(bookingDto)) {
+        if (bookedItem.isAvailableToRent() && checkDates(bookingDto) && bookerId != bookedItem.getOwnerId()) {
             Booking booking = convertToEntity(bookingDto, bookerId, bookedItem, booker);
             booking.setStatus(StatusType.WAITING);
             log.info("Booking with id = {} created", booking.getId());
@@ -41,6 +41,25 @@ public class BookingServiceImpl implements BookingService {
         }
         log.error("IllegalArgumentException in createBooking(). Check arguments");
         throw new IllegalArgumentException(String.format("Error in createBooking(). Check arguments"));
+    }
+
+    @Override
+    public GetBookingDto responseBooking(long ownerId, long bookingId, boolean isApproved) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(
+                                            String.format("Booking with id = %d not found", bookingId)));
+        if (booking.getItem().getOwnerId() != ownerId) {
+            log.error("User with id = {} is not a owner of item in booking", ownerId);
+            throw new NotFoundException(
+                    String.format("User with id = %d is not a owner of item. Owner is a user with id = %d",
+                            ownerId, booking.getItem().getOwnerId()));
+        }
+        if (booking.getStatus() == StatusType.WAITING) {
+            booking.setStatus(isApproved ? StatusType.APPROVED : StatusType.REJECTED);
+        } else {
+            log.error("Booking with id = {} is already has status not WAITING", bookingId);
+            throw new IllegalArgumentException(String.format("Booking with id = %d is already has status not WAITING", bookingId));
+        }
+        return convertToGetDto(bookingRepository.save(booking));
     }
 
     private boolean checkDates(BookingDto booking) {
