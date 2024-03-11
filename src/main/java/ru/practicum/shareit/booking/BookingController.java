@@ -8,6 +8,7 @@ import ru.practicum.shareit.booking.dto.GetBookingDto;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -29,28 +30,24 @@ public class BookingController {
                                          @RequestParam(name = "approved") boolean isApproved) {
         return bookingService.responseBooking(ownerId, bookingId, isApproved);
     }
-//
-//    @GetMapping("/{bookingId}")
-//    public GetBookingDto findBookingById(@RequestHeader(USER_HEADER) long bookerId,
-//                                         @PathVariable long bookingId) {
-//        return convertToGetDto(bookingService.findBookingById(bookerId, bookingId));
-//    }
-//
-//    @GetMapping
-//    public List<GetBookingDto> findBookingForCurrentUser(@RequestHeader(USER_HEADER) long bookerId,
-//                                                         @RequestParam(defaultValue = "ALL") String state) {
-//        return bookingService.findBookingForCurrentUser(bookerId, state).stream()
-//                .map(BookingMapper::convertToGetDto)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @GetMapping("/owner")
-//    public List<GetBookingDto> findBookingForOwner(@RequestHeader(USER_HEADER) long ownerId,
-//                                                   @RequestParam(defaultValue = "ALL") String state) {
-//        return bookingService.findBookingForOwner(ownerId, state).stream()
-//                .map(BookingMapper::convertToGetDto)
-//                .collect(Collectors.toList());
-//    }
+
+    @GetMapping("/{bookingId}")
+    public GetBookingDto findBookingById(@RequestHeader(USER_HEADER) long userId,
+                                         @PathVariable long bookingId) {
+        return bookingService.findBookingById(userId, bookingId);
+    }
+
+    @GetMapping
+    public List<GetBookingDto> findBookingForCurrentUser(@RequestHeader(USER_HEADER) long bookerId,
+                                                         @RequestParam(defaultValue = "ALL") String state) {
+        return bookingService.findBookingForCurrentUser(bookerId, state);
+    }
+
+    @GetMapping("/owner")
+    public List<GetBookingDto> findBookingForOwner(@RequestHeader(USER_HEADER) long ownerId,
+                                                   @RequestParam(defaultValue = "ALL") String state) {
+        return bookingService.findBookingForOwner(ownerId, state);
+    }
 
     private void validateDates(LocalDateTime startDate, LocalDateTime endDate) {
         if (!startDate.isBefore(endDate) || startDate.isBefore(LocalDateTime.now())) {

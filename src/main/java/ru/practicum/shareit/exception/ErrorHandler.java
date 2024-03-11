@@ -38,7 +38,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse argumentException(final IllegalArgumentException e) {
         log.error("Ошибка в аргументах запроса");
-        return new ErrorResponse("Ошибка в аргументах запроса");
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
