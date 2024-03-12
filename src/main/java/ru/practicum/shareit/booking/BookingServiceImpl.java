@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
             log.error("Owner can not book his item");
             throw new NotFoundException(String.format("Owner can not book his item"));
         }
-        Booking booking = convertToEntity(bookingDto, bookerId, bookedItem, booker);
+        Booking booking = convertToEntity(bookingDto, bookedItem, booker);
         booking.setStatus(StatusType.WAITING);
         log.info("Booking with id = {} created", booking.getId());
         return convertToGetDto(bookingRepository.save(booking));
@@ -147,7 +147,6 @@ public class BookingServiceImpl implements BookingService {
             log.error("Unknown state: {}", state);
             throw new IllegalArgumentException(String.format("Unknown state: %s", state));
         }
-
         if (bookings.size() == 0) {
             log.error("Bookings for owner with id = {} not found", ownerId);
             throw new RuntimeException(String.format("Bookings for owner with id = %d not found", ownerId));

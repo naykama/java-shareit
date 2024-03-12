@@ -13,7 +13,12 @@ public class BookingMapper {
                                                                             booking.getBooker(), booking.getItem());
     }
 
-    public static Booking convertToEntity(BookingDto bookingDto, long bookerId, Item item, User booker) {
+    public static Booking convertToEntity(BookingDto bookingDto, Item item, User booker) {
         return new Booking(bookingDto.getStartDate(), bookingDto.getEndDate(), item, booker);
+    }
+
+    public static BookingDtoWithoutItem convertToDtoWithoutItem(Booking booking) {
+        return new BookingDtoWithoutItem(booking.getId(), booking.getStartDate(), booking.getEndDate(),
+                booking.getBooker().getId());
     }
 }

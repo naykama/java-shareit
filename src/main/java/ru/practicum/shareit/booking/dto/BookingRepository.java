@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.Booking;
 
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends CrudRepository<Booking, Long> {
     List<Booking> findByItemId(long itemId);
 
     List<Booking> findByBookerId(long bookerId);
@@ -30,4 +31,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemOwnerIdAndStartDateAfter(long bookerId, LocalDateTime date);
 
     List<Booking> findByItemOwnerIdAndStatus(long bookerId, Booking.StatusType status);
+
+    @Query("SELECT booking from Booking as booking join booking.item as itm join booking.booker as u where itm.id = ?1 AND u.id = ?2 " +
+            "AND booking.status = 'APPROVED' AND booking.startDate <= ?3")
+    List<Booking> findForCheckComment(long itemId, long bookerId, LocalDateTime commentDate);
 }
