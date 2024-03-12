@@ -25,15 +25,15 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers().stream()
+    public List<UserDto> findAllUsers() {
+        return userService.findAllUsers().stream()
                 .map(UserMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable long id) {
-        return convertToDto(userService.getUserById(id));
+    public UserDto findUserById(@PathVariable long id) {
+        return convertToDto(userService.findUserById(id));
     }
 
     @PatchMapping("/{id}")

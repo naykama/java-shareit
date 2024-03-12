@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.AlreadyExistException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dto.UserRepository;
+
 import java.util.*;
 
 @Slf4j
@@ -22,14 +22,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> findAllUsers() {
         List<User> users = userRepository.findAll();
         log.info("List of users found, count of users = {}", users.size());
         return users;
     }
 
     @Override
-    public User getUserById(long id) {
+    public User findUserById(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(
                                         String.format("User with id = %d not found", id)));
         log.info("User with id = {} found", user.getId());
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(long id, Map<String, String> userUpdatedParams) {
-        User user = getUserById(id);
+        User user = findUserById(id);
         for (String key : userUpdatedParams.keySet()) {
             switch (key) {
                 case "email":
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
     private Set<String> getAllEmails() {
         Set<String> emails = new HashSet<>();
-        for (User user :  getAllUsers()) {
+        for (User user :  findAllUsers()) {
             emails.add(user.getEmail());
         }
         return emails;

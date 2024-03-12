@@ -10,9 +10,9 @@ import java.util.Map;
 public interface ItemService {
     Item createItem(Item item);
 
-    List<GetItemDto> getAllItemsForOwner(long ownerId);
+    List<GetItemDto> findAllItemsForOwner(long ownerId);
 
-    GetItemDto getItemById(long id, long ownerId);
+    GetItemDto findItemById(long id, long ownerId);
 
     Item updateItem(long id, Map<String, String> updatedParams, long ownerId);
 

@@ -6,9 +6,9 @@ import java.util.Map;
 public interface UserService {
     User createUser(User user);
 
-    List<User> getAllUsers();
+    List<User> findAllUsers();
 
-    User getUserById(long id);
+    User findUserById(long id);
 
     User updateUser(long id, Map<String, String> userUpdatedParams);
 

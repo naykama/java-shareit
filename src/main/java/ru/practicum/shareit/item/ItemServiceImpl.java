@@ -7,11 +7,11 @@ import org.springframework.util.StringUtils;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.dto.BookingDtoWithoutItem;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingRepository;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.dto.UserRepository;
+import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<GetItemDto> getAllItemsForOwner(long ownerId) {
+    public List<GetItemDto> findAllItemsForOwner(long ownerId) {
         List<Item> items = itemRepository.getByOwnerId(ownerId);
         log.info("Items for owner with id = {} found, count of items = {}", ownerId, items.size());
         return items.stream()
@@ -52,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public GetItemDto getItemById(long id, long ownerId) {
+    public GetItemDto findItemById(long id, long ownerId) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException(
                                                                     String.format("Item with id = %d not found", id)));
         log.info("Item with id = {} found", id);
@@ -100,16 +100,15 @@ public class ItemServiceImpl implements ItemService {
             log.error("Comment needs to have text");
             throw new IllegalArgumentException("Comment doesn't have text");
         }
-        log.debug("createComment: перед findForCheckComment");
         if (bookingRepository.findForCheckComment(itemId, userId, createDate).size() == 0) {
             log.error("Not found booking with userId = {} and itemId = {}", userId, itemId);
             throw new IllegalArgumentException("Not found booking with such user and item");
         }
         User author = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 String.format("User with id = %d not found", userId)));
-        log.debug("createComment: комментарию найден автор");
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(
                 String.format("Item with id = %d not found", itemId)));
+        log.info("Comment from user id = {} to item id = {} was created", userId, itemId);
         return convertToGetDto(commentRepository.save(convertToEntity(text, createDate, author, item)));
     }
 

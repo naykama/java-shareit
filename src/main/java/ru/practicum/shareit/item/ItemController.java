@@ -32,13 +32,13 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<GetItemDto> getAllItemsForOwner(@RequestHeader(USER_HEADER) long ownerId) {
-        return itemService.getAllItemsForOwner(ownerId);
+    public List<GetItemDto> findAllItemsForOwner(@RequestHeader(USER_HEADER) long ownerId) {
+        return itemService.findAllItemsForOwner(ownerId);
     }
 
     @GetMapping("/{id}")
-    public GetItemDto getItemById(@RequestHeader(USER_HEADER) long ownerId, @PathVariable long id) {
-        return itemService.getItemById(id, ownerId);
+    public GetItemDto findItemById(@RequestHeader(USER_HEADER) long ownerId, @PathVariable long id) {
+        return itemService.findItemById(id, ownerId);
     }
 
     @PatchMapping("/{id}")
@@ -57,8 +57,6 @@ public class ItemController {
     @PostMapping("{id}/comment")
     private GetCommentDto createComment(@RequestHeader(USER_HEADER) long userId, @PathVariable long id,
                                         @RequestBody @NotNull Map<String, String> textMap) {
-        log.debug("json прочитан");
         return itemService.createComment(textMap.get("text"), LocalDateTime.now(), userId, id);
-//        return new GetCommentDto(userId,"fg", textMap.get("text"), LocalDateTime.now());
     }
 }
