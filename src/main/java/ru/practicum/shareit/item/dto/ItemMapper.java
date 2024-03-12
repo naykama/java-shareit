@@ -1,9 +1,7 @@
 package ru.practicum.shareit.item.dto;
-import ru.practicum.shareit.booking.dto.BookingDtoWithoutItem;
-import ru.practicum.shareit.item.Comment;
-import ru.practicum.shareit.item.Item;
 
-import java.time.LocalDateTime;
+import ru.practicum.shareit.booking.dto.BookingDtoWithoutItem;
+import ru.practicum.shareit.item.Item;
 
 public class ItemMapper {
     public static ItemDto convertToDto(Item item) {

@@ -1,23 +1,21 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.*;
-
+import ru.practicum.shareit.item.dto.GetCommentDto;
+import ru.practicum.shareit.item.dto.GetItemDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.item.dto.ItemMapper.*;
-import static ru.practicum.shareit.item.dto.CommentMapper.*;
+import static ru.practicum.shareit.item.dto.ItemMapper.convertToDto;
+import static ru.practicum.shareit.item.dto.ItemMapper.convertToEntity;
 
 @RestController
 @RequestMapping("/items")

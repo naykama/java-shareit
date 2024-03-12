@@ -18,6 +18,7 @@ public class User {
     private Long id;
     @NotEmpty(message = "email cannot be empty")
     @Email(message = "email is not correct")
+    @Column(unique = true)
     private String email;
     private String name;
 
