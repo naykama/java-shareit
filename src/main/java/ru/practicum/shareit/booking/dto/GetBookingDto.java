@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -18,6 +19,6 @@ public class GetBookingDto {
     @JsonProperty("end")
     private final LocalDateTime endDate;
     private final Booking.StatusType status;
-    private final User booker;
-    private final Item item;
+    private final UserDto booker;
+    private final ItemDto item;
 }
