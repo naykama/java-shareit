@@ -39,11 +39,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(long id, Map<String, String> userUpdatedParams) {
         User user = findUserById(id);
+        Set<String> emails = getAllEmails();
         for (String key : userUpdatedParams.keySet()) {
             switch (key) {
                 case "email":
                     String email = userUpdatedParams.get("email");
-                    if (getAllEmails().contains(email) && !user.getEmail().equals(email)) {
+                    if (emails.contains(email) && !user.getEmail().equals(email)) {
                         log.error("Other user with email = {} is already exist", user.getEmail());
                         throw new AlreadyExistException(String.format("Other user with email = %s is already exist", user.getEmail()));
                     }

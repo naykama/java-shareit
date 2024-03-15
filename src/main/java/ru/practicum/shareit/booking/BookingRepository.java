@@ -3,8 +3,6 @@ package ru.practicum.shareit.booking;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.booking.Booking;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,7 +30,11 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
 
     List<Booking> findByItemOwnerIdAndStatus(long bookerId, Booking.StatusType status);
 
-    @Query("SELECT booking from Booking as booking join booking.item as itm join booking.booker as u where itm.id = ?1 AND u.id = ?2 " +
-            "AND booking.status = 'APPROVED' AND booking.startDate <= ?3")
+    @Query("SELECT booking from Booking as booking\n" +
+            "JOIN FETCH booking.item as itm\n" +
+            "JOIN FETCH booking.booker as u\n" +
+            "WHERE itm.id = ?1 AND u.id = ?2 AND booking.status = 'APPROVED' AND booking.startDate <= ?3")
     List<Booking> findForCheckComment(long itemId, long bookerId, LocalDateTime commentDate);
+
+    List<Booking> findByItemIdInAndStatusNot(List<Long> itemIds, Booking.StatusType status);
 }

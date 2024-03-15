@@ -14,10 +14,8 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.dto.CommentMapper.convertToEntity;
@@ -43,11 +41,20 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<GetItemDto> findAllItemsForOwner(long ownerId) {
-        List<Item> items = itemRepository.getByOwnerId(ownerId);
-        log.info("Items for owner with id = {} found, count of items = {}", ownerId, items.size());
-        return items.stream()
-                .map(item -> getItemDtoWithComments(getItemDtoWithBookings(item, ownerId)))
-                .sorted(Comparator.comparing(GetItemDto::getId))
+        Map<Long, Item> items =  itemRepository.getByOwnerId(ownerId).stream()
+                .collect(Collectors.toMap(Item::getId, Function.identity()));
+        Map<Long, List<Booking>> bookings = bookingRepository.findByItemIdInAndStatusNot(new ArrayList<>(items.keySet()),
+                                                                    Booking.StatusType.REJECTED)
+                .stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+        Map<Long, List<Comment>> comments = commentRepository.findByItemIdIn(items.keySet()).stream()
+                .collect(Collectors.groupingBy(comment -> comment.getItem().getId()));
+        log.info("Items found, count of items = {}", items.size());
+        return items.values().stream()
+                .map(item -> convertToGetDto(item,
+                        getLastBooking(bookings.getOrDefault(item.getId(), Collections.emptyList())),
+                        getNextBooking(bookings.getOrDefault(item.getId(), Collections.emptyList())),
+                        getCommentDtos(comments.getOrDefault(item.getId(), Collections.emptyList()))))
                 .collect(Collectors.toList());
     }
 
@@ -56,7 +63,14 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException(
                                                                     String.format("Item with id = %d not found", id)));
         log.info("Item with id = {} found", id);
-        return getItemDtoWithComments(getItemDtoWithBookings(item, ownerId));
+        List<Comment> comments = commentRepository.findByItemIdIn(new HashSet<>(Collections.singletonList(item.getId())));
+        if (ownerId != item.getOwnerId()) {
+            return convertToGetDto(item, null, null, comments.stream()
+                    .map(CommentMapper::convertToGetDto).collect(Collectors.toList()));
+        }
+        List<Booking> bookings = bookingRepository.findByItemIdInAndStatusNot(
+                Collections.singletonList(item.getId()), Booking.StatusType.REJECTED);
+        return convertToGetDto(item, getLastBooking(bookings), getNextBooking(bookings), getCommentDtos(comments));
     }
 
     @Override
@@ -112,42 +126,31 @@ public class ItemServiceImpl implements ItemService {
         return convertToGetDto(commentRepository.save(convertToEntity(text, createDate, author, item)));
     }
 
-    private List<GetCommentDto> findCommentsForItem(long itemId) {
-        return commentRepository.findByItemId(itemId).stream()
-                .map(CommentMapper::convertToGetDto)
-                .collect(Collectors.toList());
-    }
-
     private User findUserForItem(long ownerId) {
         return userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException(
                 String.format("User with id = %d not found", ownerId)));
     }
 
-    private List<Booking> getBookingsForItem(long itemId) {
-        return bookingRepository.findByItemId(itemId).stream()
-            .sorted(Comparator.comparing(Booking::getStartDate))
-            .collect(Collectors.toList());
-    }
 
-    private GetItemDto getItemDtoWithBookings(Item item, long ownerId) {
-        if (ownerId != item.getOwnerId()) {
-            return convertToGetDto(item, null, null);
-        }
-        List<BookingDtoWithoutItem> bookings = getBookingsForItem(item.getId()).stream()
-                .filter(booking -> booking.getStatus() != Booking.StatusType.REJECTED)
-                .map(BookingMapper::convertToDtoWithoutItem)
-                .collect(Collectors.toList());
-        BookingDtoWithoutItem lastBooking = bookings.stream()
+    private BookingDtoWithoutItem getLastBooking(List<Booking> bookings) {
+        return bookings.stream()
                 .filter(booking -> booking.getStartDate().isBefore(LocalDateTime.now()))
+                .sorted(Comparator.comparing(Booking::getStartDate))
+                .map(BookingMapper::convertToDtoWithoutItem)
                 .reduce((first, second) -> second).orElse(null);
-        BookingDtoWithoutItem nextBooking = bookings.stream()
-                .filter(booking -> booking.getStartDate().isAfter(LocalDateTime.now()))
-                .reduce((first, second) -> first).orElse(null);
-        return convertToGetDto(item, lastBooking, nextBooking);
     }
 
-    private GetItemDto getItemDtoWithComments(GetItemDto item) {
-        item.setComments(findCommentsForItem(item.getId()));
-        return item;
+    private BookingDtoWithoutItem getNextBooking(List<Booking> bookings) {
+        return bookings.stream()
+                .filter(booking -> booking.getStartDate().isAfter(LocalDateTime.now()))
+                .sorted(Comparator.comparing(Booking::getStartDate))
+                .map(BookingMapper::convertToDtoWithoutItem)
+                .reduce((first, second) -> first).orElse(null);
+    }
+
+    private List<GetCommentDto> getCommentDtos(List<Comment> comments) {
+        return comments
+                .stream()
+                .map(CommentMapper::convertToGetDto).collect(Collectors.toList());
     }
 }
