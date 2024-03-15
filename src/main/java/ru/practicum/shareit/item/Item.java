@@ -1,17 +1,36 @@
 package ru.practicum.shareit.item;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import javax.validation.constraints.NotEmpty;
+import lombok.*;
 
-@Data
+import javax.persistence.*;
+
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "items")
+@Getter
+@Setter
+@ToString
 public class Item {
-    private long id;
-    @NotEmpty(message = "name cannot be empty")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
-    @NotEmpty(message = "description cannot be empty")
     private String description;
+    @Column(name = "available_for_rent")
     private boolean isAvailableToRent;
-    private long ownerId;
+    @Column(name = "owner_id")
+    private Long ownerId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        return id != null && id.equals(((Item) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

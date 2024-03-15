@@ -16,7 +16,7 @@ import static ru.practicum.shareit.user.dto.UserMapper.*;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @PostMapping
     public UserDto createUser(@Valid @RequestBody UserDto userDto) {
@@ -25,15 +25,15 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers().stream()
+    public List<UserDto> findAllUsers() {
+        return userService.findAllUsers().stream()
                 .map(UserMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable long id) {
-        return convertToDto(userService.getUserById(id));
+    public UserDto findUserById(@PathVariable long id) {
+        return convertToDto(userService.findUserById(id));
     }
 
     @PatchMapping("/{id}")

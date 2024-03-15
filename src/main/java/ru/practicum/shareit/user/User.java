@@ -1,15 +1,34 @@
 package ru.practicum.shareit.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+
+import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @AllArgsConstructor
-@Data
+@NoArgsConstructor
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@ToString
 public class User {
-    private long id;
-    @NotEmpty(message = "email cannot be empty")
-    @Email(message = "email is not correct")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
     private String email;
     private String name;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        return id != null && id.equals(((User) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
