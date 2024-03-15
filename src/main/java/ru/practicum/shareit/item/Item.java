@@ -3,7 +3,6 @@ package ru.practicum.shareit.item;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,9 +15,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotEmpty(message = "name cannot be empty")
     private String name;
-    @NotEmpty(message = "description cannot be empty")
     private String description;
     @Column(name = "available_for_rent")
     private boolean isAvailableToRent;

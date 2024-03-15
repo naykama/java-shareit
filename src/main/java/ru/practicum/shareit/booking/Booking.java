@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -28,10 +27,8 @@ public class Booking {
     @JoinColumn(name = "booker_id")
     private User booker;
     @Column(name = "start_date")
-    @NotNull
     private LocalDateTime startDate;
     @Column(name = "end_date")
-    @NotNull
     private LocalDateTime endDate;
     @Enumerated(EnumType.STRING)
     private StatusType status;

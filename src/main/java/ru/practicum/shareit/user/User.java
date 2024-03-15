@@ -16,8 +16,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotEmpty(message = "email cannot be empty")
-    @Email(message = "email is not correct")
     @Column(unique = true)
     private String email;
     private String name;
