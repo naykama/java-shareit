@@ -1,7 +1,10 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
@@ -43,6 +46,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(itemRequest -> ItemRequestMapping.convertToGetDto(itemRequest,
                         itemsForRequest.getOrDefault(itemRequest.getId(), new ArrayList<>())))
                 .sorted(Comparator.comparing(ItemRequestDto::getCreateDate))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GetItemRequestDto> findAllFromOthersRequests(int from, int size, long userId) {
+        findUserForRequest(userId);
+        Page<ItemRequest> requests = requestRepository.findByAuthorIdNot(userId, PageRequest.of(from, size,
+                                                                        Sort.by("createDate")));
+        Map<Long, List<Item>> itemsForRequest = itemRepository.findByRequestIdIsNotNull().stream()
+                .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
+        return requests.stream()
+                .map(itemRequest -> ItemRequestMapping.convertToGetDto(itemRequest,
+                        itemsForRequest.getOrDefault(itemRequest.getId(), new ArrayList<>())))
                 .collect(Collectors.toList());
     }
 
