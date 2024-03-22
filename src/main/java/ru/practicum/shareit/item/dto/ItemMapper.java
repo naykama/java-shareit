@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.booking.dto.BookingDtoWithoutItem;
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.request.ItemRequest;
+
 import java.util.List;
 
 public class ItemMapper {
@@ -10,9 +12,13 @@ public class ItemMapper {
         return itemDto;
     }
 
-    public static Item convertToEntity(ItemDto itemDto, long ownerId) {
-        return new Item(itemDto.getId(), itemDto.getName(), itemDto.getDescription(), itemDto.getIsAvailableToRent(),
+    public static Item convertToEntity(ItemDto itemDto, long ownerId, ItemRequest request) {
+        Item item = new Item(itemDto.getId(), itemDto.getName(), itemDto.getDescription(), itemDto.getIsAvailableToRent(),
                 ownerId);
+        if (request != null) {
+            item.setRequest(request);
+        }
+        return item;
     }
 
     public static GetItemDto convertToGetDto(Item item, BookingDtoWithoutItem lastBooking, BookingDtoWithoutItem nextBooking,

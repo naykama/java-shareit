@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
@@ -18,4 +19,5 @@ public class ItemDto {
     @JsonProperty("available")
     @NotNull
     private final Boolean isAvailableToRent;
+    private Long requestId;
 }

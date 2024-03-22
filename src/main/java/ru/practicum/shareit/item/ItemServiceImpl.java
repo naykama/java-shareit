@@ -12,6 +12,8 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -21,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.dto.CommentMapper.convertToEntity;
+import static ru.practicum.shareit.item.dto.ItemMapper.convertToDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.convertToGetDto;
 import static ru.practicum.shareit.item.dto.CommentMapper.convertToGetDto;
 
@@ -32,13 +35,18 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
     @Override
-    public Item createItem(Item item) {
-        findUserForItem(item.getOwnerId());
-        Item createdItem = itemRepository.save(item);
+    public ItemDto createItem(ItemDto itemDto, long ownerId) {
+        findUserForItem(ownerId);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null) {
+            request = findRequestForItem(itemDto.getRequestId());
+        }
+        Item createdItem = itemRepository.save(ItemMapper.convertToEntity(itemDto, ownerId, request));
         log.info("Item with id = {} created", createdItem.getId());
-        return createdItem;
+        return convertToDto(createdItem);
     }
 
     @Override
@@ -154,5 +162,10 @@ public class ItemServiceImpl implements ItemService {
         return comments
                 .stream()
                 .map(CommentMapper::convertToGetDto).collect(Collectors.toList());
+    }
+
+    private ItemRequest findRequestForItem(long reqestId) {
+        return requestRepository.findById(reqestId).orElseThrow(() -> new NotFoundException(
+                String.format("Request with id = %d not found", reqestId)));
     }
 }

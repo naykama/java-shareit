@@ -1,12 +1,24 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.PostItemRequestDto;
 
-/**
- * TODO Sprint add-item-requests.
- */
+import javax.validation.Valid;
+import java.time.LocalDateTime;
+import static ru.practicum.shareit.request.dto.ItemRequestMapping.convertToEntity;
+
 @RestController
 @RequestMapping(path = "/requests")
+@RequiredArgsConstructor
 public class ItemRequestController {
+    private static final String USER_HEADER = "X-Sharer-User-Id";
+    private final ItemRequestService service;
+
+    @PostMapping
+    public ItemRequestDto createRequest(@RequestHeader(USER_HEADER) long authorId, @Valid @RequestBody PostItemRequestDto description) {
+//        return service.createRequest(convertToEntity(description.getDescription(), authorId, LocalDateTime.now()));
+        return service.createRequest(convertToEntity(description.getDescription(), authorId, LocalDateTime.now()));
+    }
 }
