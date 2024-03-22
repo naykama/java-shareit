@@ -1,14 +1,19 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.dto.BookingDtoWithoutItem;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.request.ItemRequest;
 
 import java.util.List;
 
+@Slf4j
 public class ItemMapper {
     public static ItemDto convertToDto(Item item) {
         ItemDto itemDto = new ItemDto(item.getId(), item.getName(), item.getDescription(), item.isAvailableToRent());
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
         return itemDto;
     }
 
@@ -18,6 +23,7 @@ public class ItemMapper {
         if (request != null) {
             item.setRequest(request);
         }
+        log.debug("convertToEntity: itemRequestId = {}", item.getRequest());
         return item;
     }
 

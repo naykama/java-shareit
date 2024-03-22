@@ -44,7 +44,9 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getRequestId() != null) {
             request = findRequestForItem(itemDto.getRequestId());
         }
+        log.debug("itemDto.getRequestId() = {}, request = {}", itemDto.getRequestId(), request);
         Item createdItem = itemRepository.save(ItemMapper.convertToEntity(itemDto, ownerId, request));
+        log.debug("createdItem: {}, request= {}", createdItem, createdItem.getRequest());
         log.info("Item with id = {} created", createdItem.getId());
         return convertToDto(createdItem);
     }
