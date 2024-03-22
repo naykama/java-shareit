@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.request.dto.ItemRequestMapping.convertToDto;
+import static ru.practicum.shareit.request.dto.ItemRequestMapping.convertToGetDto;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +61,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(itemRequest -> ItemRequestMapping.convertToGetDto(itemRequest,
                         itemsForRequest.getOrDefault(itemRequest.getId(), new ArrayList<>())))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public GetItemRequestDto findById(long requestId, long userId) {
+        findUserForRequest(userId);
+        ItemRequest request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException(
+                String.format("Item with id = %d not found", requestId)));
+        List<Item> items = itemRepository.findByRequestId(requestId);
+        return convertToGetDto(request, items);
     }
 
     private User findUserForRequest(long authorId) {

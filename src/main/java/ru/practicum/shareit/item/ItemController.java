@@ -27,8 +27,6 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestHeader(USER_HEADER) long ownerId, @Valid @RequestBody ItemDto itemDto) {
-//        Item item = convertToEntity(itemDto, ownerId);
-//        return convertToDto(itemService.createItem(item));
         return itemService.createItem(itemDto, ownerId);
     }
 

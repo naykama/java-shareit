@@ -31,7 +31,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<GetItemRequestDto> findAllRequests(@RequestHeader(USER_HEADER) long userId) {
+    public List<GetItemRequestDto> findAll(@RequestHeader(USER_HEADER) long userId) {
         return service.findAllRequests(userId);
     }
 
@@ -39,7 +39,11 @@ public class ItemRequestController {
     public List<GetItemRequestDto> findAllFromOthersRequests(@RequestHeader(USER_HEADER) long userId,
                                                              @RequestParam(required = false) @PositiveOrZero Integer from,
                                                              @RequestParam(required = false) @Positive Integer size) {
-//        List<GetItemRequestDto> page = service.findAllFromOthersRequests(from, size, userId);
         return from == null || size == null ? new ArrayList<>() : service.findAllFromOthersRequests(from, size, userId);
+    }
+
+    @GetMapping("/{requestId}")
+    public GetItemRequestDto findById(@RequestHeader(USER_HEADER) long userId, @PathVariable long requestId) {
+        return service.findById(requestId, userId);
     }
 }

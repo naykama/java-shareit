@@ -12,4 +12,6 @@ public interface ItemRequestService {
     List<GetItemRequestDto> findAllRequests(long userId);
 
     List<GetItemRequestDto> findAllFromOthersRequests(int from, int size, long userId);
+
+    GetItemRequestDto findById(long requestId, long userId);
 }
