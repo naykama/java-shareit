@@ -7,15 +7,17 @@ import ru.practicum.shareit.item.dto.GetCommentDto;
 import ru.practicum.shareit.item.dto.GetItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.dto.ItemMapper.convertToDto;
-import static ru.practicum.shareit.item.dto.ItemMapper.convertToEntity;
 
 @RestController
 @RequestMapping("/items")
@@ -31,8 +33,10 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<GetItemDto> findAllItemsForOwner(@RequestHeader(USER_HEADER) long ownerId) {
-        return itemService.findAllItemsForOwner(ownerId);
+    public List<GetItemDto> findAllItemsForOwner(@RequestHeader(USER_HEADER) long ownerId,
+                                                 @RequestParam(required = false) @PositiveOrZero Integer from,
+                                                 @RequestParam(required = false) @Positive Integer size) {
+        return itemService.findAllItemsForOwner(ownerId, from, size);
     }
 
     @GetMapping("/{id}")
@@ -47,8 +51,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    private List<ItemDto> searchItems(@RequestParam String text) {
-        return itemService.searchItems(text).stream()
+    private List<ItemDto> searchItems(@RequestParam String text,
+                                      @RequestParam(required = false) @PositiveOrZero Integer from,
+                                      @RequestParam(required = false) @Positive Integer size) {
+        return itemService.searchItems(text, from, size).stream()
                 .map(ItemMapper::convertToDto)
                 .collect(Collectors.toList());
     }

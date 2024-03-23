@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDtoWithoutItem;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -23,9 +23,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.dto.CommentMapper.convertToEntity;
+import static ru.practicum.shareit.item.dto.CommentMapper.convertToGetDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.convertToDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.convertToGetDto;
-import static ru.practicum.shareit.item.dto.CommentMapper.convertToGetDto;
+import static ru.practicum.shareit.utils.CustomPage.getPage;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +51,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<GetItemDto> findAllItemsForOwner(long ownerId) {
-        Map<Long, Item> items =  itemRepository.getByOwnerId(ownerId).stream()
+    public List<GetItemDto> findAllItemsForOwner(long ownerId, Integer from, Integer size) {
+        Map<Long, Item> items =  itemRepository.getByOwnerId(ownerId, getPage(from, size)).stream()
                 .collect(Collectors.toMap(Item::getId, Function.identity()));
         Map<Long, List<Booking>> bookings = bookingRepository.findByItemIdInAndStatusNot(new ArrayList<>(items.keySet()),
                                                                     Booking.StatusType.REJECTED)
@@ -112,10 +113,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> searchItems(String text) {
+    public List<Item> searchItems(String text, Integer from, Integer size) {
         log.info("Items for search with text = {} found", text);
         return text.isEmpty() ? new ArrayList<>() : itemRepository
-                .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndIsAvailableToRentIsTrue(text, text);
+                .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndIsAvailableToRentIsTrue(text, text,
+                        getPage(from, size));
     }
 
     @Override

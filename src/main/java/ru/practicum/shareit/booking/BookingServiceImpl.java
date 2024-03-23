@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.booking.dto.BookingMapper.convertToEntity;
 import static ru.practicum.shareit.booking.dto.BookingMapper.convertToGetDto;
+import static ru.practicum.shareit.utils.CustomPage.getPage;
 
 @Service
 @RequiredArgsConstructor
@@ -82,27 +85,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<GetBookingDto> findBookingForCurrentUser(long bookerId, String state) {
+    public List<GetBookingDto> findBookingForCurrentUser(long bookerId, String state, Integer from, Integer size) {
         List<Booking> bookings = new ArrayList<>();
+        Pageable pageConfig = getPage(from, size, Sort.by("startDate").descending());
         try {
             switch (BookingStatus.valueOf(state)) {
                 case ALL:
-                    bookings = bookingRepository.findByBookerId(bookerId);
+                    bookings = bookingRepository.findByBookerId(bookerId, pageConfig);
                     break;
                 case PAST:
-                    bookings = bookingRepository.findByBookerIdAndEndDateBefore(bookerId, LocalDateTime.now());
+                    bookings = bookingRepository.findByBookerIdAndEndDateBefore(bookerId, LocalDateTime.now(), pageConfig);
                     break;
                 case CURRENT:
-                    bookings = bookingRepository.findByBookerIdAndStartDateBeforeAndEndDateAfter(bookerId, LocalDateTime.now(), LocalDateTime.now());
+                    bookings = bookingRepository.findByBookerIdAndStartDateBeforeAndEndDateAfter(bookerId,
+                            LocalDateTime.now(), LocalDateTime.now(), pageConfig);
                     break;
                 case FUTURE:
-                    bookings = bookingRepository.findByBookerIdAndStartDateAfter(bookerId, LocalDateTime.now());
+                    bookings = bookingRepository.findByBookerIdAndStartDateAfter(bookerId, LocalDateTime.now(), pageConfig);
                     break;
                 case WAITING:
-                    bookings = bookingRepository.findByBookerIdAndStatus(bookerId, StatusType.WAITING);
+                    bookings = bookingRepository.findByBookerIdAndStatus(bookerId, StatusType.WAITING, pageConfig);
                     break;
                 case REJECTED:
-                    bookings = bookingRepository.findByBookerIdAndStatus(bookerId, StatusType.REJECTED);
+                    bookings = bookingRepository.findByBookerIdAndStatus(bookerId, StatusType.REJECTED, pageConfig);
                     break;
             }
         } catch (IllegalArgumentException e) {
@@ -114,32 +119,33 @@ public class BookingServiceImpl implements BookingService {
             throw new RuntimeException(String.format("Bookings for booker with id = %d not found", bookerId));
         }
         return bookings.stream()
-                .sorted(Comparator.comparing(Booking::getStartDate).reversed())
                 .map(BookingMapper::convertToGetDto)
                 .collect(Collectors.toList());
     }
 
-    public List<GetBookingDto> findBookingForOwner(long ownerId, String state) {
+    public List<GetBookingDto> findBookingForOwner(long ownerId, String state, Integer from, Integer size) {
         List<Booking> bookings = new ArrayList<>();
+        Pageable pageConfig = getPage(from, size, Sort.by("startDate").descending());
         try {
             switch (BookingStatus.valueOf(state)) {
                 case ALL:
-                    bookings = bookingRepository.findByItemOwnerId(ownerId);
+                    bookings = bookingRepository.findByItemOwnerId(ownerId, pageConfig);
                     break;
                 case PAST:
-                    bookings = bookingRepository.findByItemOwnerIdAndEndDateBefore(ownerId, LocalDateTime.now());
+                    bookings = bookingRepository.findByItemOwnerIdAndEndDateBefore(ownerId, LocalDateTime.now(), pageConfig);
                     break;
                 case CURRENT:
-                    bookings = bookingRepository.findByItemOwnerIdAndStartDateBeforeAndEndDateAfter(ownerId, LocalDateTime.now(), LocalDateTime.now());
+                    bookings = bookingRepository.findByItemOwnerIdAndStartDateBeforeAndEndDateAfter(ownerId, LocalDateTime.now(),
+                            LocalDateTime.now(), pageConfig);
                     break;
                 case FUTURE:
-                    bookings = bookingRepository.findByItemOwnerIdAndStartDateAfter(ownerId, LocalDateTime.now());
+                    bookings = bookingRepository.findByItemOwnerIdAndStartDateAfter(ownerId, LocalDateTime.now(), pageConfig);
                     break;
                 case WAITING:
-                    bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, StatusType.WAITING);
+                    bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, StatusType.WAITING, pageConfig);
                     break;
                 case REJECTED:
-                    bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, StatusType.REJECTED);
+                    bookings = bookingRepository.findByItemOwnerIdAndStatus(ownerId, StatusType.REJECTED, pageConfig);
                     break;
             }
         } catch (IllegalArgumentException e) {
