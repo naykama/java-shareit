@@ -38,6 +38,7 @@ public class Booking {
         this.endDate = endDate;
         this.item = item;
         this.booker = booker;
+        status = StatusType.WAITING;
     }
 
     public enum StatusType {

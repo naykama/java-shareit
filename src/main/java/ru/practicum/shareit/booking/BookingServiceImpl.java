@@ -48,7 +48,6 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException(String.format("Owner can not book his item"));
         }
         Booking booking = convertToEntity(bookingDto, bookedItem, booker);
-        booking.setStatus(StatusType.WAITING);
         log.info("Booking with id = {} created", booking.getId());
         return convertToGetDto(bookingRepository.save(booking));
     }
