@@ -15,6 +15,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,6 +35,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public GetBookingDto createBooking(BookingDto bookingDto, long bookerId) {
         Item bookedItem = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException(
                                             String.format("Item with id = %d not found", bookingDto.getItemId())));
@@ -49,10 +51,12 @@ public class BookingServiceImpl implements BookingService {
         }
         Booking booking = convertToEntity(bookingDto, bookedItem, booker);
         log.info("Booking with id = {} created", booking.getId());
-        return convertToGetDto(bookingRepository.save(booking));
+        Booking bookingAnswer = bookingRepository.save(booking);
+        return convertToGetDto(bookingAnswer);
     }
 
     @Override
+    @Transactional
     public GetBookingDto responseBooking(long ownerId, long bookingId, boolean isApproved) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(
                                             String.format("Booking with id = %d not found", bookingId)));
@@ -72,6 +76,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public GetBookingDto findBookingById(long bookerOrOwnerId, long bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(
                                             String.format("Booking with id = %d not found", bookingId)));
@@ -84,6 +89,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public List<GetBookingDto> findBookingForCurrentUser(long bookerId, String state, Integer from, Integer size) {
         List<Booking> bookings = new ArrayList<>();
         Pageable pageConfig = getPage(from, size, Sort.by("startDate").descending());
@@ -122,6 +128,8 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
     public List<GetBookingDto> findBookingForOwner(long ownerId, String state, Integer from, Integer size) {
         List<Booking> bookings = new ArrayList<>();
         Pageable pageConfig = getPage(from, size, Sort.by("startDate").descending());

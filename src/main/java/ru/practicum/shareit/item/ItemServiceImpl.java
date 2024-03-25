@@ -17,6 +17,7 @@ import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -39,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRequestRepository requestRepository;
 
     @Override
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, long ownerId) {
         findUserForItem(ownerId);
         ItemRequest request = null;

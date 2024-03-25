@@ -48,6 +48,11 @@ public class BookingRepositoryTest {
         bookingRepository.save(booking);
     }
 
+    /**
+     * Ids description:
+     * Item with id=1 has owner (user with id = 1), and two bookings (ids:1, 2) (user with id = 2 and user with id = 3)
+     */
+
     @Test
     @DirtiesContext
     public void findByItemIdTest() {
