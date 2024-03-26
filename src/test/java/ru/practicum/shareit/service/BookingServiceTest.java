@@ -34,7 +34,7 @@ import static ru.practicum.shareit.utils.CustomPage.getPage;
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceTest {
     private BookingService service;
-    private static final LocalDateTime TODAY = LocalDateTime.now();
+    private static final LocalDateTime START_DAY = LocalDateTime.now();
     @Mock
     BookingRepository bookingRepository;
     @Mock
@@ -76,7 +76,7 @@ public class BookingServiceTest {
     public void createBookingTest() {
         Item item = createItem();
         User booker = createBooker();
-        BookingDto bookingDto = new BookingDto(item.getId(), TODAY, TODAY.plusDays(5));
+        BookingDto bookingDto = new BookingDto(item.getId(), START_DAY, START_DAY.plusDays(5));
         Booking booking = convertToEntity(bookingDto, item, booker);
 
         Booking booking1 = new Booking(booking.getStartDate(), booking.getEndDate(), item, booker);
@@ -184,13 +184,13 @@ public class BookingServiceTest {
     }
 
     private Booking createBooking() {
-        Booking booking = new Booking(TODAY, TODAY.plusDays(5), createItem(), createBooker());
+        Booking booking = new Booking(START_DAY, START_DAY.plusDays(5), createItem(), createBooker());
         booking.setId(1L);
         return booking;
     }
 
     private Booking createSecondBooking() {
-        Booking booking = new Booking(TODAY.minusDays(5), TODAY.minusDays(3), createItem(), createBooker());
+        Booking booking = new Booking(START_DAY.minusDays(5), START_DAY.minusDays(3), createItem(), createBooker());
         booking.setId(2L);
         return booking;
     }

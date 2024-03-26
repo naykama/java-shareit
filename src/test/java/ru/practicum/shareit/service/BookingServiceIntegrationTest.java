@@ -24,7 +24,7 @@ import static ru.practicum.shareit.utils.CustomPage.getPage;
 
 @SpringBootTest
 public class BookingServiceIntegrationTest {
-    private static final LocalDateTime TODAY = LocalDateTime.now();
+    private static final LocalDateTime START_DAY = LocalDateTime.now();
     @Autowired
     private BookingService bookingService;
     @Autowired
@@ -113,7 +113,7 @@ public class BookingServiceIntegrationTest {
     private Booking createBooking() {
         Item item = createItem();
         User booker = createBooker();
-        Booking booking = new Booking(TODAY, TODAY.plusDays(5), item, booker);
+        Booking booking = new Booking(START_DAY, START_DAY.plusDays(5), item, booker);
         booking.setId(bookingService.createBooking(new BookingDto(item.getId(), booking.getStartDate(), booking.getEndDate()),
                 booker.getId()).getBookingId());
         return booking;
