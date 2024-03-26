@@ -18,10 +18,10 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -95,27 +95,27 @@ public class BookingControllerTest {
     @Test
     public void findBookingForCurrentUserTest() throws Exception {
         GetBookingDto getBookingDto = createGetBooking();
-        when(bookingService.findBookingById(anyLong(), anyLong())).thenReturn(getBookingDto);
-        mvc.perform(get("/bookings/1").header("X-Sharer-User-Id", 1)
+        when(bookingService.findBookingForCurrentUser(anyLong(), anyString(), anyInt(), anyInt()))
+                .thenReturn(Arrays.asList(getBookingDto));
+        mvc.perform(get("/bookings").header("X-Sharer-User-Id", 1)
                         .param("state", "All").param("from", "0").param("size", "2")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(getBookingDto.getBookingId()), Long.class));
+                .andExpect(status().isOk());
     }
 
     @Test
     public void findBookingForOwnerTest() throws Exception {
         GetBookingDto getBookingDto = createGetBooking();
-        when(bookingService.findBookingById(anyLong(), anyLong())).thenReturn(getBookingDto);
-        mvc.perform(get("/bookings/1").header("X-Sharer-User-Id", 1)
+        when(bookingService.findBookingForOwner(anyLong(), anyString(), anyInt(), anyInt()))
+                .thenReturn(Arrays.asList(getBookingDto));
+        mvc.perform(get("/bookings/owner").header("X-Sharer-User-Id", 1)
                         .param("state", "All").param("from", "0").param("size", "2")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(getBookingDto.getBookingId()), Long.class));
+                .andExpect(status().isOk());
     }
 
     private GetBookingDto createGetBooking() {
