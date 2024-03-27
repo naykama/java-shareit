@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.AlreadyExistException;
 import ru.practicum.shareit.exception.NotFoundException;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Slf4j
@@ -15,6 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public User createUser(User user) {
         User createdUser = userRepository.save(user);
         log.info("User with id = {} created", createdUser.getId());

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.*;
+import ru.practicum.shareit.request.ItemRequest;
 
 import javax.persistence.*;
 
@@ -21,6 +22,17 @@ public class Item {
     private boolean isAvailableToRent;
     @Column(name = "owner_id")
     private Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id")
+    private ItemRequest request;
+
+    public Item(Long id, String name, String description, boolean isAvailableToRent, Long ownerId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.isAvailableToRent = isAvailableToRent;
+        this.ownerId = ownerId;
+    }
 
     @Override
     public boolean equals(Object o) {

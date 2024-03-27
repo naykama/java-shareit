@@ -34,10 +34,12 @@ public class Booking {
     private StatusType status;
 
     public Booking(LocalDateTime startDate, LocalDateTime endDate, Item item, User booker) {
+        id = -1L;
         this.startDate = startDate;
         this.endDate = endDate;
         this.item = item;
         this.booker = booker;
+        status = StatusType.WAITING;
     }
 
     public enum StatusType {

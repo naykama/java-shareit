@@ -16,7 +16,7 @@ import static ru.practicum.shareit.user.dto.UserMapper.*;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @PostMapping
     public UserDto createUser(@Valid @RequestBody UserDto userDto) {
