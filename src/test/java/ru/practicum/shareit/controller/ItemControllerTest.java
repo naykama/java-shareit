@@ -111,12 +111,12 @@ public class ItemControllerTest {
         map.put("text", "text");
         when(itemService.createComment(anyString(), any(LocalDateTime.class), anyLong(), anyLong()))
                 .thenReturn(new GetCommentDto(1L, "text", "author", LocalDateTime.now()));
-        mvc.perform(get("/items/1/comment").header("X-Sharer-User-Id", ownerId)
+        mvc.perform(post("/items/1/comment").header("X-Sharer-User-Id", ownerId)
                         .content(mapper.writeValueAsString(map))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isOk());
     }
 
     @Test
