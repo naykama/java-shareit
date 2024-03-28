@@ -57,6 +57,20 @@ public class BookingControllerTest {
     }
 
     @Test
+    public void createBookingNotValidTest() throws Exception {
+        BookingDto bookingDto = new BookingDto(1L, START_DAY, START_DAY.plusDays(5));
+        GetBookingDto getBookingDto = createGetBooking();
+        when(bookingService.createBooking(any(BookingDto.class), anyLong())).thenThrow(IllegalArgumentException.class);
+
+        mvc.perform(post("/bookings").header("X-Sharer-User-Id", getBookingDto.getBooker().getId())
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void createBookingWithNullItemIdTest() throws Exception {
         BookingDto bookingDto = new BookingDto(null, START_DAY, START_DAY.plusDays(5));
         mvc.perform(post("/bookings").header("X-Sharer-User-Id", 1)

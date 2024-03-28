@@ -1,4 +1,5 @@
-package ru.practicum.shareit.repository;
+package ru.practicum.shareit.repository1;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,30 +20,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.practicum.shareit.utils.CustomPage.getPage;
 
 @DataJpaTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ItemRepositoryTest {
     private Pageable pageConfig = getPage(0, 2);
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ItemRepository itemRepository;
-    @Autowired
-    private ItemRequestRepository requestRepository;
+//    @Autowired
+    private final UserRepository userRepository;
+//    @Autowired
+    private final ItemRepository itemRepository;
+//    @Autowired
+    private final ItemRequestRepository requestRepository;
 
     @Test
-    @DirtiesContext
     public void getByOwnerIdTest() {
         Map<String, Long> ids = createContext();
         assertEquals(2, itemRepository.getByOwnerId(ids.get("ownerId"), pageConfig).size());
     }
 
     @Test
-    @DirtiesContext
     public void searchTest() {
         createContext();
         String text = "descr";
         assertEquals(2,
-            itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndIsAvailableToRentIsTrue(text,
-                    text, pageConfig).size());
+                itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndIsAvailableToRentIsTrue(text,
+                        text, pageConfig).size());
         String text1 = "item1";
         assertEquals(1,
                 itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndIsAvailableToRentIsTrue(text1,
@@ -50,14 +51,12 @@ public class ItemRepositoryTest {
     }
 
     @Test
-    @DirtiesContext
     public void findByRequestIdIsNotNullTest() {
         createContext();
         assertEquals(1, itemRepository.findByRequestIdIsNotNull().size());
     }
 
     @Test
-    @DirtiesContext
     public void findByRequestId() {
         Map<String, Long> ids = createContext();
         assertEquals(1, itemRepository.findByRequestId(ids.get("requestId")).size());
@@ -68,7 +67,7 @@ public class ItemRepositoryTest {
         Map<String, Long> allIds = new HashMap<>();
         long ownerId = userRepository.save(new User(1L, "owner@mail.ru", "Owner")).getId();
         long item1Id = itemRepository.save(new Item(1L, "item1", "descr1", true,
-                        ownerId)).getId();
+                ownerId)).getId();
         long authorId = userRepository.save(new User(2L, "author@mail.ru", "Owner")).getId();
         ItemRequest request = requestRepository.save(new ItemRequest(authorId, "for item2", LocalDateTime.now()));
         Item item2 = new Item(2L, "item2", "descr", true, ownerId);

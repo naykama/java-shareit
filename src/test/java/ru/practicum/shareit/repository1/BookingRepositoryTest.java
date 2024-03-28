@@ -1,4 +1,4 @@
-package ru.practicum.shareit.repository;
+package ru.practicum.shareit.repository1;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +72,13 @@ public class BookingRepositoryTest {
     @DirtiesContext
     public void findByBookerIdTest() {
         List<Booking> bookings = bookingRepository.findByBookerId(1L, getPage(0, 2,
-                                                                    Sort.by("startDate").descending()));
+                Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
         createFirstBooking();
         createSecondBooking();
         bookings = bookingRepository.findByBookerId(2L, getPage(0, 2,
-                                                                    Sort.by("startDate").descending()));
+                Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
         assertEquals(1, bookings.get(0).getId());
     }
