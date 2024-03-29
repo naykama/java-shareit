@@ -1,12 +1,10 @@
-package ru.practicum.shareit.repository1;
+package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;

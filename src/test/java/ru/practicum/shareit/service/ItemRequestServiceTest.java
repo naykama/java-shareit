@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.ItemRequest;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,8 +82,9 @@ public class ItemRequestServiceTest {
     @Test
     public void findByIdTest() {
         User author = createAuthor();
-        ItemRequest request = createRequest();
         when(userRepository.findById(author.getId())).thenReturn(Optional.of(author));
+        assertThrows(NotFoundException.class, () -> service.findById(1L, author.getId()).getId());
+        ItemRequest request = createRequest();
         when(itemRepository.findByRequestId(request.getId())).thenReturn(List.of(createItem()));
         when(requestRepository.findById(request.getId())).thenReturn(Optional.of(request));
         assertEquals(1L, service.findById(request.getId(), author.getId()).getId());

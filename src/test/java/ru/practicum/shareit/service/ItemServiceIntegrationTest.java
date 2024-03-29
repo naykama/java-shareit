@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -15,8 +16,10 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class ItemServiceIntegrationTest {
@@ -45,6 +48,14 @@ public class ItemServiceIntegrationTest {
         ItemDto dto = new ItemDto(1L, "item1", "descr", true);
         dto.setRequestId(1L);
         assertEquals(1L, service.createItem(dto, 1L).getId());
+    }
+
+    @Test
+    @DirtiesContext
+    public void findByNotValidIdTest() {
+        userRepository.save(createAuthor());
+        assertThrows(NotFoundException.class, () -> service.updateItem(1L, new HashMap<>(), 1L));
+        assertThrows(NotFoundException.class, () -> service.findItemById(1L, 1L));
     }
 
     private User createAuthor() {

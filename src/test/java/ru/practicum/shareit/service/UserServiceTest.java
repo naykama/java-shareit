@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -42,6 +44,7 @@ public class UserServiceTest {
 
     @Test
     public void findUserByIdTest() {
+        assertThrows(NotFoundException.class, () -> service.findUserById(1L));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(createUser()));
         assertEquals("owner1@mail.ru", service.findUserById(1L).getEmail());
     }

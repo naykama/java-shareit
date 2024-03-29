@@ -125,6 +125,11 @@ public class ItemServiceTest {
         when(bookingRepository.findForCheckComment(anyLong(), anyLong(), any(LocalDateTime.class)))
                 .thenReturn(new ArrayList<>());
         assertThrows(IllegalArgumentException.class,() -> service.createComment("text", CREATE_DAY, 1L, 1L));
+        when(bookingRepository.findForCheckComment(anyLong(), anyLong(), any(LocalDateTime.class)))
+                .thenReturn(List.of(createBooking()));
+        assertThrows(NotFoundException.class,() -> service.createComment("text", CREATE_DAY, 1L, 1L));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(createAuthor()));
+        assertThrows(NotFoundException.class,() -> service.createComment("text", CREATE_DAY, 1L, 1L));
     }
 
     @Test

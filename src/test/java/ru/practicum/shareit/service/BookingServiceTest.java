@@ -20,6 +20,7 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -88,6 +89,9 @@ public class BookingServiceTest {
 
         assertEquals(1L, service.createBooking(bookingDto, booker.getId()).getBookingId());
         verify(bookingRepository).save(any(Booking.class));
+
+        when(bookingRepository.findByItemId(anyLong())).thenReturn(List.of(booking1));
+        assertThrows(IllegalArgumentException.class, () -> service.createBooking(bookingDto, booker.getId()).getBookingId());
     }
 
     @Test
@@ -164,11 +168,30 @@ public class BookingServiceTest {
     }
 
     @Test
+    public void findBookingForOwnerTestWithNotTrueUser() {
+        Integer from = 0;
+        Integer size = 2;
+        assertThrows(RuntimeException.class, () ->
+                service.findBookingForOwner(5L, "REJECTED", from, size));
+        assertThrows(RuntimeException.class, () ->
+                service.findBookingForOwner(5L, "PAST", from, size));
+
+    }
+
+    @Test
     public void findBookingForCurrentUserTestWithNotTrueState() {
         Integer from = 0;
         Integer size = 2;
         assertThrows(IllegalArgumentException.class, () ->
                 service.findBookingForCurrentUser(5L, "WrongState", from, size));
+    }
+
+    @Test
+    public void findBookingForOwnerTestWithNotTrueState() {
+        Integer from = 0;
+        Integer size = 2;
+        assertThrows(IllegalArgumentException.class, () ->
+                service.findBookingForOwner(5L, "WrongState", from, size));
     }
 
     private User createBooker() {
