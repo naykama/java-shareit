@@ -68,7 +68,7 @@ public class BookingRepositoryTest {
 
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
-        bookings = bookingRepository.findByBookerId(2L, getPage(0, 2,
+        bookings = bookingRepository.findByBookerId(booking.getBooker().getId(), getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
@@ -83,7 +83,7 @@ public class BookingRepositoryTest {
 
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
-        bookings = bookingRepository.findByBookerId(3L, getPage(0, 2,
+        bookings = bookingRepository.findByBookerId(booking2.getBooker().getId(), getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
         assertEquals(booking2.getId(), bookings.get(0).getId());
@@ -94,13 +94,14 @@ public class BookingRepositoryTest {
     public void findByBookerIdAndStartDateBeforeAndEndDateAfterTest() {
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
-        List<Booking> bookings = bookingRepository.findByBookerIdAndStartDateBeforeAndEndDateAfter(2L,
+        List<Booking> bookings = bookingRepository.findByBookerIdAndStartDateBeforeAndEndDateAfter(
+                booking.getBooker().getId(),
                 LocalDateTime.now().minusDays(5), LocalDateTime.now(),
                 getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
-
-        bookings = bookingRepository.findByBookerIdAndStartDateBeforeAndEndDateAfter(2L,
+        bookings = bookingRepository.findByBookerIdAndStartDateBeforeAndEndDateAfter(
+                booking.getBooker().getId(),
                 LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(3),
                 getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
@@ -113,12 +114,12 @@ public class BookingRepositoryTest {
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
 
-        List<Booking> bookings = bookingRepository.findByBookerIdAndStartDateAfter(2L, LocalDateTime.now().plusDays(2),
-                getPage(0, 2, Sort.by("startDate").descending()));
+        List<Booking> bookings = bookingRepository.findByBookerIdAndStartDateAfter(booking.getBooker().getId(),
+                LocalDateTime.now().plusDays(2), getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
-        bookings = bookingRepository.findByBookerIdAndStartDateAfter(2L, LocalDateTime.now().minusDays(2),
-                getPage(0, 2, Sort.by("startDate").descending()));
+        bookings = bookingRepository.findByBookerIdAndStartDateAfter(booking.getBooker().getId(),
+                LocalDateTime.now().minusDays(2), getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
     }
@@ -128,11 +129,11 @@ public class BookingRepositoryTest {
     public void findByBookerIdAndStatusTest() {
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
-        List<Booking> bookings = bookingRepository.findByBookerIdAndStatus(2L, Booking.StatusType.REJECTED,
-                getPage(0, 2, Sort.by("startDate").descending()));
+        List<Booking> bookings = bookingRepository.findByBookerIdAndStatus(booking.getBooker().getId(),
+                Booking.StatusType.REJECTED, getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
-        bookings = bookingRepository.findByBookerIdAndStatus(2L, Booking.StatusType.WAITING,
+        bookings = bookingRepository.findByBookerIdAndStatus(booking.getBooker().getId(), Booking.StatusType.WAITING,
                 getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
@@ -148,7 +149,7 @@ public class BookingRepositoryTest {
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
 
-        bookings = bookingRepository.findByItemOwnerId(1L, getPage(0, 2,
+        bookings = bookingRepository.findByItemOwnerId(booking2.getItem().getOwnerId(), getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(2, bookings.size());
         assertEquals(booking2.getId(), bookings.get(0).getId());
@@ -163,7 +164,7 @@ public class BookingRepositoryTest {
 
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
-        bookings = bookingRepository.findByBookerId(2L, getPage(0, 2,
+        bookings = bookingRepository.findByBookerId(booking.getBooker().getId(), getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
@@ -177,7 +178,8 @@ public class BookingRepositoryTest {
         booking.setStatus(Booking.StatusType.APPROVED);
         bookingRepository.save(booking);
 
-        List<Booking> bookings = bookingRepository.findForCheckComment(1, 2, LocalDateTime.now().plusDays(3));
+        List<Booking> bookings = bookingRepository.findForCheckComment(booking.getItem().getId(), booking.getBooker().getId(),
+                LocalDateTime.now().plusDays(3));
         assertEquals(1, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
     }
@@ -188,10 +190,14 @@ public class BookingRepositoryTest {
         Booking booking = createFirstBooking();
         Booking booking2 = createSecondBooking();
 
-        List<Booking> bookings = bookingRepository.findByItemIdInAndStatusNot(Arrays.asList(1L, 2L), Booking.StatusType.WAITING);
+        List<Booking> bookings = bookingRepository.findByItemIdInAndStatusNot(
+                Arrays.asList(booking.getItem().getId(), booking2.getItem().getId()),
+                Booking.StatusType.WAITING);
         assertEquals(0, bookings.size());
 
-        bookings = bookingRepository.findByItemIdInAndStatusNot(Arrays.asList(1L, 2L), Booking.StatusType.APPROVED);
+        bookings = bookingRepository.findByItemIdInAndStatusNot(
+                Arrays.asList(booking.getItem().getId(), booking2.getItem().getId()),
+                Booking.StatusType.APPROVED);
         assertEquals(2, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
     }
