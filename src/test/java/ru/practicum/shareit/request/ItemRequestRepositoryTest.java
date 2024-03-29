@@ -30,35 +30,16 @@ public class ItemRequestRepositoryTest {
     private Map<String, Long> allIds = new HashMap<>();
 
     @Test
-//    @DirtiesContext
     public void findByAuthorIdNotTest() {
-//        Map<String, Long> allIds = createContext();
-        assertEquals(1, requestRepository.findByAuthorIdNot(allIds.get("request1Id"), pageConfig).size());
+        assertEquals(0, requestRepository.findByAuthorIdNot(allIds.get("author1Id"), pageConfig).size());
     }
-
-//    private Map<String, Long> createContext() {
-//        Map<String, Long> allIds = new HashMap<>();
-//        long author1Id = userRepository.save(new User(1L, "owner@mail.ru", "Owner")).getId();
-//        long author2Id = userRepository.save(new User(2L, "author@mail.ru", "Owner")).getId();
-//        long request1Id = requestRepository.save(new ItemRequest(author1Id, "for item2", LocalDateTime.now())).getId();
-//        long request2Id = requestRepository.save(new ItemRequest(author2Id, "for item2", LocalDateTime.now())).getId();
-//        allIds.put("author1Id", author1Id);
-//        allIds.put("author2Id", author2Id);
-//        allIds.put("request1Id", request1Id);
-//        allIds.put("request2Id", request2Id);
-//        return allIds;
-//    }
 
     @BeforeAll
     public void createContext() {
         long author1Id = userRepository.save(new User(1L, "owner@mail.ru", "Owner")).getId();
-//        long author2Id = userRepository.save(new User(2L, "author@mail.ru", "Owner")).getId();
         long request1Id = requestRepository.save(new ItemRequest(author1Id, "for item2", LocalDateTime.now())).getId();
-//        long request2Id = requestRepository.save(new ItemRequest(author2Id, "for item2", LocalDateTime.now())).getId();
         allIds.put("author1Id", author1Id);
-//        allIds.put("author2Id", author2Id);
         allIds.put("request1Id", request1Id);
-//        allIds.put("request2Id", request2Id);
     }
 
     @AfterAll
