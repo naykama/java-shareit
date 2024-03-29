@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
@@ -27,23 +26,17 @@ public class BookingRepositoryTest {
     @Autowired
     private ItemRepository itemRepository;
 
-    private void createFirstBooking() {
-        User owner = new User(1L, "owner1@mail.ru", "owner1");
-        User booker = new User(2L, "booker1@mail.ru", "booker1");
-        Item item = new Item(1L, "item1", "desc", true, owner.getId());
-        userRepository.save(owner);
-        userRepository.save(booker);
-        itemRepository.save(item);
-        Booking booking = new Booking(LocalDateTime.now(), LocalDateTime.now().plusDays(5L), item, booker);
-        bookingRepository.save(booking);
+    private Booking createFirstBooking() {
+        User owner = userRepository.save(new User(1L, "owner1@mail.ru", "owner1"));
+        User booker = userRepository.save(new User(2L, "booker1@mail.ru", "booker1"));
+        Item item = itemRepository.save(new Item(1L, "item1", "desc", true, owner.getId()));
+        return bookingRepository.save(new Booking(LocalDateTime.now(), LocalDateTime.now().plusDays(5L), item, booker));
     }
 
-    private void createSecondBooking() {
-        Item item = itemRepository.getById(1L);
-        User booker = new User(3L, "booker2@mail.ru", "booker2");
-        userRepository.save(booker);
-        Booking booking = new Booking(LocalDateTime.now(), LocalDateTime.now().plusDays(5L), item, booker);
-        bookingRepository.save(booking);
+    private Booking createSecondBooking() {
+        Item item = itemRepository.findAll().get(0);
+        User booker = userRepository.save(new User(3L, "booker2@mail.ru", "booker2"));
+        return bookingRepository.save(new Booking(LocalDateTime.now(), LocalDateTime.now().plusDays(5L), item, booker));
     }
 
     /**
@@ -57,12 +50,12 @@ public class BookingRepositoryTest {
         List<Booking> bookings = bookingRepository.findByItemId(1);
         assertEquals(0, bookings.size());
 
-        createFirstBooking();
-        bookings = bookingRepository.findByItemId(1);
+        Booking booking = createFirstBooking();
+        bookings = bookingRepository.findByItemId(booking.getItem().getId());
         assertEquals(1, bookings.size());
 
-        createSecondBooking();
-        bookings = bookingRepository.findByItemId(1);
+        Booking booking2 = createSecondBooking();
+        bookings = bookingRepository.findByItemId(booking2.getItem().getId());
         assertEquals(2, bookings.size());
     }
 
@@ -73,12 +66,12 @@ public class BookingRepositoryTest {
                 Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
-        createFirstBooking();
-        createSecondBooking();
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
         bookings = bookingRepository.findByBookerId(2L, getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
-        assertEquals(1, bookings.get(0).getId());
+        assertEquals(booking.getId(), bookings.get(0).getId());
     }
 
     @Test
@@ -88,20 +81,19 @@ public class BookingRepositoryTest {
                 LocalDateTime.now().plusDays(7), getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
-        createFirstBooking();
-        createSecondBooking();
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
         bookings = bookingRepository.findByBookerId(3L, getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
-        assertEquals(2, bookings.get(0).getId());
+        assertEquals(booking2.getId(), bookings.get(0).getId());
     }
 
     @Test
     @DirtiesContext
     public void findByBookerIdAndStartDateBeforeAndEndDateAfterTest() {
-        createFirstBooking();
-        createSecondBooking();
-
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
         List<Booking> bookings = bookingRepository.findByBookerIdAndStartDateBeforeAndEndDateAfter(2L,
                 LocalDateTime.now().minusDays(5), LocalDateTime.now(),
                 getPage(0, 2, Sort.by("startDate").descending()));
@@ -112,14 +104,14 @@ public class BookingRepositoryTest {
                 LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(3),
                 getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
-        assertEquals(1, bookings.get(0).getId());
+        assertEquals(booking.getId(), bookings.get(0).getId());
     }
 
     @Test
     @DirtiesContext
     public void findByBookerIdAndStartDateAfterTest() {
-        createFirstBooking();
-        createSecondBooking();
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
 
         List<Booking> bookings = bookingRepository.findByBookerIdAndStartDateAfter(2L, LocalDateTime.now().plusDays(2),
                 getPage(0, 2, Sort.by("startDate").descending()));
@@ -128,15 +120,14 @@ public class BookingRepositoryTest {
         bookings = bookingRepository.findByBookerIdAndStartDateAfter(2L, LocalDateTime.now().minusDays(2),
                 getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
-        assertEquals(1, bookings.get(0).getId());
+        assertEquals(booking.getId(), bookings.get(0).getId());
     }
 
     @Test
     @DirtiesContext
     public void findByBookerIdAndStatusTest() {
-        createFirstBooking();
-        createSecondBooking();
-
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
         List<Booking> bookings = bookingRepository.findByBookerIdAndStatus(2L, Booking.StatusType.REJECTED,
                 getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
@@ -144,7 +135,7 @@ public class BookingRepositoryTest {
         bookings = bookingRepository.findByBookerIdAndStatus(2L, Booking.StatusType.WAITING,
                 getPage(0, 2, Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
-        assertEquals(1, bookings.get(0).getId());
+        assertEquals(booking.getId(), bookings.get(0).getId());
     }
 
     @Test
@@ -154,13 +145,13 @@ public class BookingRepositoryTest {
                 Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
-        createFirstBooking();
-        createSecondBooking();
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
 
         bookings = bookingRepository.findByItemOwnerId(1L, getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(2, bookings.size());
-        assertEquals(2, bookings.get(0).getId());
+        assertEquals(booking2.getId(), bookings.get(0).getId());
     }
 
     @Test
@@ -170,40 +161,38 @@ public class BookingRepositoryTest {
                 Sort.by("startDate").descending()));
         assertEquals(0, bookings.size());
 
-        createFirstBooking();
-        createSecondBooking();
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
         bookings = bookingRepository.findByBookerId(2L, getPage(0, 2,
                 Sort.by("startDate").descending()));
         assertEquals(1, bookings.size());
-        assertEquals(1, bookings.get(0).getId());
+        assertEquals(booking.getId(), bookings.get(0).getId());
     }
 
     @Test
     @DirtiesContext
     public void findForCheckCommentTest() {
-        createFirstBooking();
-        createSecondBooking();
-        Booking booking = bookingRepository.findById(1L).orElseThrow(() -> new NotFoundException(
-                String.format("Booking with id 1 not found")));
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
         booking.setStatus(Booking.StatusType.APPROVED);
         bookingRepository.save(booking);
 
         List<Booking> bookings = bookingRepository.findForCheckComment(1, 2, LocalDateTime.now().plusDays(3));
         assertEquals(1, bookings.size());
-        assertEquals(1, bookings.get(0).getId());
+        assertEquals(booking.getId(), bookings.get(0).getId());
     }
 
     @Test
     @DirtiesContext
     public void findByItemIdInAndStatusNotTest() {
-        createFirstBooking();
-        createSecondBooking();
+        Booking booking = createFirstBooking();
+        Booking booking2 = createSecondBooking();
 
         List<Booking> bookings = bookingRepository.findByItemIdInAndStatusNot(Arrays.asList(1L, 2L), Booking.StatusType.WAITING);
         assertEquals(0, bookings.size());
 
         bookings = bookingRepository.findByItemIdInAndStatusNot(Arrays.asList(1L, 2L), Booking.StatusType.APPROVED);
         assertEquals(2, bookings.size());
-        assertEquals(1, bookings.get(0).getId());
+        assertEquals(booking.getId(), bookings.get(0).getId());
     }
 }
