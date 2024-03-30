@@ -65,8 +65,13 @@ public class UserServiceTest {
         Map<String, String> userUpdatedParams = new HashMap<>();
         userUpdatedParams.put("email", "newEmail@mail.ru");
         userUpdatedParams.put("name", "newName");
-
         assertEquals("newEmail@mail.ru", service.updateUser(user.getId(), userUpdatedParams).getEmail());
+    }
+
+    @Test
+    public void userTest() {
+        User user = createUser();
+        assertEquals(user.hashCode(), user.hashCode());
     }
 
     @BeforeEach
