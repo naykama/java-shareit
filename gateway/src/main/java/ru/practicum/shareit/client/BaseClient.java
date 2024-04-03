@@ -72,7 +72,9 @@ public class BaseClient {
     }
 
     protected ResponseEntity<Object> delete(String path, long userId) {
+//protected void delete(String path, long userId) {
         return delete(path, userId, null);
+//        delete(path, userId, null);
     }
 
     protected ResponseEntity<Object> delete(String path, Long userId, @Nullable Map<String, Object> parameters) {

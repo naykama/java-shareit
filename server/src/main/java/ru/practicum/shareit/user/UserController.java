@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -17,12 +18,12 @@ import static ru.practicum.shareit.user.dto.UserMapper.convertToEntity;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Validated
+@Slf4j
 public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto createUser(@RequestBody UserDto userDto) {
         User user = convertToEntity(userDto);
         return convertToDto(userService.createUser(user));
     }
