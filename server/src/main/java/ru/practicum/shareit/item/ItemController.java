@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.dto.GetItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -28,7 +27,7 @@ public class ItemController {
     private static final String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader(USER_HEADER) long ownerId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto createItem(@RequestHeader(USER_HEADER) long ownerId, @RequestBody ItemDto itemDto) {
         return itemService.createItem(itemDto, ownerId);
     }
 
@@ -51,7 +50,8 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    private List<ItemDto> searchItems(@RequestParam String text,
+    public List<ItemDto> searchItems(@RequestHeader(USER_HEADER) long ownerId,
+                                      @RequestParam String text,
                                       @RequestParam(required = false) @PositiveOrZero Integer from,
                                       @RequestParam(required = false) @Positive Integer size) {
         return itemService.searchItems(text, from, size).stream()
