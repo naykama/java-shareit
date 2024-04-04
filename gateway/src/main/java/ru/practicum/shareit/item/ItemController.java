@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Map;
@@ -55,8 +55,8 @@ public class ItemController {
     }
 
     @PostMapping("{id}/comment")
-    private ResponseEntity<Object> createComment(@RequestHeader(USER_HEADER) long userId, @PathVariable long id,
-                                                    @RequestBody @NotNull Map<String, String> textMap) {
-        return itemClient.createComment(textMap.get("text"), userId, id);
+    public ResponseEntity<Object> createComment(@RequestHeader(USER_HEADER) long userId, @PathVariable long id,
+                                                @RequestBody @Valid CommentDto commentDto) {
+        return itemClient.createComment(commentDto, userId, id);
     }
 }

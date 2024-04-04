@@ -8,9 +8,6 @@ import ru.practicum.shareit.item.dto.GetItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +30,8 @@ public class ItemController {
 
     @GetMapping
     public List<GetItemDto> findAllItemsForOwner(@RequestHeader(USER_HEADER) long ownerId,
-                                                 @RequestParam(required = false) @PositiveOrZero Integer from,
-                                                 @RequestParam(required = false) @Positive Integer size) {
+                                                 @RequestParam(required = false) Integer from,
+                                                 @RequestParam(required = false) Integer size) {
         return itemService.findAllItemsForOwner(ownerId, from, size);
     }
 
@@ -52,16 +49,16 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestHeader(USER_HEADER) long ownerId,
                                       @RequestParam String text,
-                                      @RequestParam(required = false) @PositiveOrZero Integer from,
-                                      @RequestParam(required = false) @Positive Integer size) {
+                                      @RequestParam(required = false) Integer from,
+                                      @RequestParam(required = false) Integer size) {
         return itemService.searchItems(text, from, size).stream()
                 .map(ItemMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @PostMapping("{id}/comment")
-    private GetCommentDto createComment(@RequestHeader(USER_HEADER) long userId, @PathVariable long id,
-                                        @RequestBody @NotNull Map<String, String> textMap) {
+    public GetCommentDto createComment(@RequestHeader(USER_HEADER) long userId, @PathVariable long id,
+                                        @RequestBody Map<String, String> textMap) {
         return itemService.createComment(textMap.get("text"), LocalDateTime.now(), userId, id);
     }
 }
