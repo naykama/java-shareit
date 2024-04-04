@@ -16,4 +16,11 @@ public class ItemRequestDto {
     private final String description;
     @JsonProperty("created")
     private final LocalDateTime createDate;
+
+    public ItemRequestDto(String description) {
+        id = null;
+        authorId = 0;
+        this.description = description;
+        createDate = null;
+    }
 }
