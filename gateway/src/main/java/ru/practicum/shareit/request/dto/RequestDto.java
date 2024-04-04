@@ -5,14 +5,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class ItemRequestDto {
+public class RequestDto {
     private final Long id;
-    private final long authorId;
+    private final Long authorId;
+    @NotNull
     private final String description;
     @JsonProperty("created")
     private final LocalDateTime createDate;
