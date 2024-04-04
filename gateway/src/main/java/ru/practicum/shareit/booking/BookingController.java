@@ -69,7 +69,7 @@ public class BookingController {
 	}
 
 	private void validateDates(LocalDateTime startDate, LocalDateTime endDate) {
-		if (!startDate.isBefore(endDate) || startDate.isBefore(LocalDateTime.now())) {
+		if (!startDate.isBefore(endDate)) {
 			log.error("Booking dates are not correct: start: {}, end: {}", startDate, endDate);
 			throw new IllegalArgumentException("Booking dates are not correct");
 		}

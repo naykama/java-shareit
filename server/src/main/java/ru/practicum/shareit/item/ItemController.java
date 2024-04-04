@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.dto.ItemMapper.convertToDto;
+import static ru.practicum.shareit.utils.Constant.USER_HEADER;
 
 @RestController
 @RequestMapping("/items")
@@ -21,7 +22,6 @@ import static ru.practicum.shareit.item.dto.ItemMapper.convertToDto;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
-    private static final String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemDto createItem(@RequestHeader(USER_HEADER) long ownerId, @RequestBody ItemDto itemDto) {
