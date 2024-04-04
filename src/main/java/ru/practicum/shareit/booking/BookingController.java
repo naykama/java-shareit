@@ -2,11 +2,14 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.GetBookingDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +17,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
     private static final String USER_HEADER = "X-Sharer-User-Id";
     private final BookingService bookingService;
@@ -39,14 +43,18 @@ public class BookingController {
 
     @GetMapping
     public List<GetBookingDto> findBookingForCurrentUser(@RequestHeader(USER_HEADER) long bookerId,
-                                                         @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.findBookingForCurrentUser(bookerId, state);
+                                                         @RequestParam(defaultValue = "ALL") String state,
+                                                         @RequestParam(required = false) @PositiveOrZero Integer from,
+                                                         @RequestParam(required = false) @Positive Integer size) {
+        return bookingService.findBookingForCurrentUser(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<GetBookingDto> findBookingForOwner(@RequestHeader(USER_HEADER) long ownerId,
-                                                   @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.findBookingForOwner(ownerId, state);
+                                                   @RequestParam(defaultValue = "ALL") String state,
+                                                   @RequestParam(required = false) @PositiveOrZero Integer from,
+                                                   @RequestParam(required = false) @Positive Integer size) {
+        return bookingService.findBookingForOwner(ownerId, state, from, size);
     }
 
     private void validateDates(LocalDateTime startDate, LocalDateTime endDate) {

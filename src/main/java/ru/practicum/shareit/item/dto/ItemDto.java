@@ -18,4 +18,5 @@ public class ItemDto {
     @JsonProperty("available")
     @NotNull
     private final Boolean isAvailableToRent;
+    private Long requestId;
 }
