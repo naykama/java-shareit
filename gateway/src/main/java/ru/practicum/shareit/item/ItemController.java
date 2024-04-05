@@ -25,6 +25,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader(USER_HEADER) long ownerId, @Valid @RequestBody ItemDto itemDto) {
+        log.info("Creating booking");
         return itemClient.createItem(ownerId, itemDto);
     }
 
